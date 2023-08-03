@@ -1,6 +1,6 @@
 # Web-Task-2-Mapping
 
-## The Second task for the Web department is to control the movement for the robot
+## The Second task for the Web department is to control the movement for the Robot
 
 The HTML code is a web page that displays a remote control interface for a robot. It includes five directional buttons for controlling the movement of the robot - Forward, Left, Stop, Right, and Backward. When a user clicks on any of these buttons, it calls the `move()` function to draw a line segment on a canvas element to show the path of the robot's movement. Additionally, the code includes JavaScript that sends the direction of the button clicked to a PHP script using an XMLHttpRequest.
 
