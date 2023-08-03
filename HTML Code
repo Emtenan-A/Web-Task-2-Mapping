@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Web remote control for the ROBOT">
+    <title>Remote-ROBOT</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+    integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" 
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<style>
+    .headings {
+        text-align:center; 
+        color:rgba(33, 31, 31, 0.911);
+        background-color:white;
+        font-family:cursive
+    }
+    .heading1 { 
+        font-size:250%;
+    }
+    .heading2 {
+        font-size:200%;
+    }
+
+    .buttondiv{
+        padding:50px;
+        text-align:center;
+    }
+    .button{
+        cursor:pointer;
+        padding:15px 20px;
+        font-size:44px; 
+        border-radius:20px;
+        background-color:rgba(33, 31, 31, 0.911);
+        color:white;
+        margin:2px 5px;
+    }
+
+    .canvas {
+        background-color:white;
+        height:400px;
+        width:40%;
+        border-radius:10%;
+        margin:0 auto;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+    }
+
+    form {
+        display:inline-block;
+    }
+
+    /* Additional CSS */
+    .button i {
+        display:inline-block;
+    }
+
+    .button i::before {
+        font-family:"Font Awesome 6 Free";
+        font-weight:900;
+    }
+
+    .button i.fa-chevron-up::before {
+        content:"\f077";
+    }
+
+    .button i.fa-chevron-left::before {
+        content:"\f053";
+    }
+
+    .button i.fa-stop::before {
+        content:"\f04d";
+    }
+
+    .button i.fa-chevron-right::before {
+        content:"\f054";
+    }
+
+    .button i.fa-chevron-down::before {
+        content:"\f078";
+    }
+</style>
+<body style="background-color:rgba(115, 130, 157, 0.737);">
+    <br><br>
+    <h1 class="headings heading1">Smart Methods</h1>
+    <h2 class="headings heading2">Remote</h2>
+    
+    <div class="buttondiv">
+        <button class="button" title="Forward" onclick="move('forward')"><i class="fa-solid fa-chevron-up"></i></button>
+        <br><br>
+        <button class="button" title="Left" onclick="move('left')"><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="button" title="Stop" onclick="move('stop')"><i class="fa-solid fa-stop"></i></button>
+        <button class="button" title="Right" onclick="move('right')"><i class="fa-solid fa-chevron-right"></i></button>
+        <br><br>
+        <button class="button" title="Backward" onclick="move('backward')"><i class="fa-solid fa-chevron-down"></i></button>
+    </div> 
+
+    <canvas id="canvas" class="canvas"></canvas>
+    <br><br><br>
+
+    <script>
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        var centerX = canvas.width / 2;
+        var centerY = canvas.height / 2;
+        var prevX = centerX;
+        var prevY = centerY;
+
+        function move(direction) {
+            const step = 20; // the length of the line segment
+            let deltaX = 0;
+            let deltaY = 0;
+
+            if (direction === 'forward') {
+                deltaY = -step;
+            } else if (direction === 'left') {
+                deltaX = -step;
+            } else if (direction === 'right') {
+                deltaX = step;
+            } else if (direction === 'backward') {
+                deltaY = step;
+            } else {
+                return;
+            }
+
+            const newX = prevX + deltaX;
+            const newY = prevY + deltaY;
+
+            ctx.beginPath();
+            ctx.moveTo(prevX, prevY);
+            ctx.lineTo(newX, newY);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'black';
+           ctx.stroke();
+
+            prevX = newX;
+            prevY = newY;
+
+            // Send command to PHP script
+            const xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function() {
+                if (this.readyState === 4 && this.status === 200) {
+                    console.log(this.responseText);
+                }
+            };
+            xmlhttp.open("GET", `store-command.php?direction=${direction}`, true);
+            xmlhttp.send();
+        }
+    </script>
+</body>
+</html>
